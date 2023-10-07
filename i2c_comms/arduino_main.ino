@@ -9,18 +9,18 @@ our real ADC when we select one.
 
 // I2C address we're assigning to this device; must be the same on the Pi.
 #define I2C_ADDR 0x0a
-#define POT_COUNT 3
+#define POT_COUNT 2
 
 // Set to true if you want to test I2C comms without access
 // to real potentiometers.
-#define ENABLE_MOCKING true
+#define ENABLE_MOCKING false
 
 // Store potentiometer readings so they're ready for the next time the Pi
 // requests them.
-uint8_t pot_readings[POT_COUNT] { 0, 0, 0 };
+uint8_t pot_readings[POT_COUNT] { 0, 0 };
 
-uint8_t pot_pins[POT_COUNT] { A0, A1, A2 };
-uint8_t pot_mock_values[POT_COUNT] { 23, 42, 12 };
+uint8_t pot_pins[POT_COUNT] { A0, A1 };
+uint8_t pot_mock_values[POT_COUNT] { 23, 42 };
 
 void setup()
 {
@@ -40,7 +40,10 @@ void loop()
   if (ENABLE_MOCKING) return;
 
   for (int i = 0; i < POT_COUNT; i++)
-    pot_readings[i] = analogRead(pot_pins[i]);
+  {
+    // This division by 3 will eventually need to be converted to a degree value. I just have it like this so it'll fit in a byte (0-255)
+    pot_readings[i] = analogRead(pot_pins[i]) / 3;
+  }
 }
 
 void handleRequest()

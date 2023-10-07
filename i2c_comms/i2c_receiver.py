@@ -7,7 +7,7 @@ from smbus2 import SMBus
 
 # I2C address hould be the same on the other device.
 I2C_ADDR = 0x0a
-POT_COUNT = 3
+POT_COUNT = 2
 
 def receive_pot_readings() -> list[int]:
     packet = []
