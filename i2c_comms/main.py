@@ -12,4 +12,5 @@ while True:
         sleep(0.05)
 
     except KeyboardInterrupt:
+        print("Program exited due to user input.")
         break

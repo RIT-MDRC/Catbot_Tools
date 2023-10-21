@@ -5,7 +5,7 @@
 
 from smbus2 import SMBus
 
-# I2C address hould be the same on the other device.
+# I2C address should be the same on the other device, along with potentiometer count.
 I2C_ADDR = 0x0a
 POT_COUNT = 2
 
