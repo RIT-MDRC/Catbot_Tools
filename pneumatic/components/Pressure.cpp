@@ -48,3 +48,8 @@ void Pressure::Pressurize(bool override)
     digitalWrite(compressorPin, LOW);
   }
 }
+
+void Pressure::ChangeCompState(bool newState)
+{
+  digitalWrite(compressorPin, newState);
+}

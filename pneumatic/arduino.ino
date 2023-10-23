@@ -22,16 +22,44 @@
 
 int timeWhenValveOpened;
 Pressure *systemPressure = NULL;
+bool automaticCompressorMode = true;
 
 void setup()
 {
   Serial.begin(9600);
   systemPressure = new Pressure(SENSOR_PIN, COMPRESSOR_PIN, SYSTEM_PRESSURE, PRESSURE_TOLERANCE, P_MIN, P_MAX, VOLTAGE_CONST);
+  while (!compSwitchPressed() && !valveSwitchPressed())
+  {
+    Serial.println(
+        "Waiting for comp switch (for automatic) or valve switch (for manual)");
+  }
+  if (valveSwitchPressed())
+  {
+    automaticCompressorMode = false;
+  }
+  while (valveSwitchPressed() || compSwitchPressed())
+  {
+    if (automaticCompressorMode)
+    {
+      Serial.println("Recognized switch, automatic compressor mode");
+    }
+    else
+    {
+      Serial.println("Recognized switch, manual compressor mode");
+    }
+  }
 }
 
 void loop()
 {
-  systemPressure->Pressurize(compSwitchPressed() && !valveSwitchPressed());
+  if (automaticCompressorMode)
+  {
+    systemPressure->Pressurize(compSwitchPressed() && !valveSwitchPressed());
+  }
+  else
+  {
+    systemPressure->ChangeCompState(compSwitchPressed());
+  }
   valveControl();
   Serial.println(systemPressure->getPressure());
   delay(100);
@@ -71,7 +99,7 @@ void valveControl()
     timeWhenValveOpened = now();
     digitalWrite(VALVE_1_PIN, HIGH);
   }
-  else if ((timeWhenValveOpened + TIME_DURATION_FOR_VALVE_OPEN < now()) || (compSwitchPressed() && valveSwitchPressed()))
+  else if (timeWhenValveOpened + TIME_DURATION_FOR_VALVE_OPEN < now())
   {
     timeWhenValveOpened = NULL;
     digitalWrite(VALVE_1_PIN, LOW);

@@ -17,6 +17,7 @@ public:
     float getPressure();
     bool PressureOk();
     void Pressurize(bool override);
+    void ChangeCompState(bool newState);
 
 private:
     const float IDEAL_PRESSURE;
