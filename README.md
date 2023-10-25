@@ -23,6 +23,7 @@ See `template-project` folder for the proper format.
 ## Reasons for the template
 The template is designed to be easy to follow and be organized and also allows for integration with the catbot cli.
 > example: `catbot start -D -p template-project` will run the main python file in the template-project folder and catbotuser can use this command without extra configuration.
+
 Readme file is also designed to make it easy to keep track of what the features do and how to use them.
 The date and author fields are also designed to add accountability in the case of an updated hardware design. 
 The date can be used to determine if the code is compatible with the new hardware design and if needed, the author can be contacted to determine if the code is compatible with the new hardware design.
