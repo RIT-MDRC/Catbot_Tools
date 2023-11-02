@@ -7,7 +7,7 @@
 
 #include <Wire.h>
 
-#define I2C_ADDR 0x2
+#define I2C_ADDR 0x09
 
 // There can be up to 8 active channels
 #define CHANNELS 8
@@ -23,7 +23,8 @@
 */
 uint8_t chPins[CHANNELS] { A0, A2, A4, A6, A1, A3, A5, A7 };
 
-uint8_t mockValues[CHANNELS] { 67, 983, 234, 34, 583, 1004, 812, 21 };
+//                          CH:  0    2    4   6    1     3    5   7
+uint16_t mockValues[CHANNELS] { 67, 983, 234, 34, 583, 1004, 812, 21 };
 
 // These are the values that would be stored on the ADC
 uint8_t channelSelection = 0;
@@ -31,6 +32,7 @@ uint8_t channelSelection = 0;
 void setup()
 {
   Wire.begin(I2C_ADDR);
+  Serial.begin(9600);
 
   Wire.onReceive(onReceive);  // Called when Pi WRITES data
   Wire.onRequest(onRequest);  // Called when Pi READS data
@@ -47,8 +49,10 @@ void onReceive()
   
   uint8_t cmd = Wire.read();
 
-  // Flip most significant bit to 0, then shift right 4 to isolate channel selection
-  channelSelection = (cmd ^= 0b10000000) >> 4;
+  if (cmd == 0) return;
+
+  // Shift right 4 to isolate channel selection, then flip most significant bit to 0
+  channelSelection = (cmd >> 4) ^ 0b1000;
 }
 
 void onRequest()
@@ -61,11 +65,10 @@ void onRequest()
     // Arduino has 10-bit resolution; our ADC will have 12. Multiply by 2^2 to normalize to that range.
     pinValue = analogRead(chPins[channelSelection]) * 4;
 
-  uint8_t moreSignificantByte = pinValue >> 8;
-  uint8_t lessSignificantByte = pinValue & 0xff00;  // flip all bits in more significant byte to 0
+  uint8_t bytes[2] = { pinValue & 0xff, pinValue >> 8 };
 
-  Wire.write(moreSignificantByte);
-  Wire.write(lessSignificantByte);
+  Wire.write(bytes[0]);
+  Wire.write(bytes[1]);
 }
 
 void loop() {}  // loop() doesn't really need to do anything here
