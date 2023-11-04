@@ -22,6 +22,7 @@ def get_value_from_adc(channel : int) -> int:
             try:
                 result = bus.read_word_data(I2C_ADDR, command_byte)
             except Exception as e:
+                print("Failed to read, trying again...")
                 continue  # just try again
             break
 
