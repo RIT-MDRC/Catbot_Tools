@@ -1,6 +1,6 @@
 from smbus2 import SMBus
 
-# I2C address of our "ADC". Will likely need to be changed to match the
+# I2C address of our "ADC". This is an arbitrary address for testing, will likely need to be changed to match the
 # address of the real ADC.
 I2C_ADDR = 0x09
 

@@ -10,7 +10,11 @@
 #define I2C_ADDR 0x09
 
 // There can be up to 8 active channels
-#define CHANNELS 8
+#define CHANNEL_COUNT 8
+
+// The resolution of the onboard ADC of the Arduino. Some are 10 and others are 12
+// so you can configure this here
+#define ARDUINO_RESOLUTION 10
 
 // Set to false if you're testing with real hardware
 #define ENABLE_MOCKING true
@@ -21,10 +25,10 @@
  The pins in the following array are ordered so that index 0 corresponds to selection bits 000, index 1 are bits 001, index 5
  are bits 101, ...
 */
-uint8_t chPins[CHANNELS] { A0, A2, A4, A6, A1, A3, A5, A7 };
+uint8_t chPins[CHANNEL_COUNT] { A0, A2, A4, A6, A1, A3, A5, A7 };
 
 //                          CH:  0    2    4   6    1     3    5   7
-uint16_t mockValues[CHANNELS] { 67, 983, 234, 34, 583, 1004, 812, 21 };
+uint16_t mockValues[CHANNEL_COUNT] { 67, 983, 234, 34, 583, 1004, 812, 21 };
 
 // These are the values that would be stored on the ADC
 uint8_t channelSelection = 0;
@@ -37,13 +41,13 @@ void setup()
   Wire.onReceive(onReceive);  // Called when Pi WRITES data
   Wire.onRequest(onRequest);  // Called when Pi READS data
 
-  for (int i = 0; i < CHANNELS; i++)
+  for (int i = 0; i < CHANNEL_COUNT; i++)
     pinMode(chPins[i], INPUT);
 }
 
 void onReceive()
 {
-  // For the sake of simplicity we'll assume Pi is always assume:
+  // For the sake of simplicity we'll assume the following command bits are:
   // SD : 0b1
   // PD1,PD0 : 0b11
   
@@ -62,8 +66,9 @@ void onRequest()
   if (ENABLE_MOCKING)
     pinValue = mockValues[channelSelection];
   else
-    // Arduino has 10-bit resolution; our ADC will have 12. Multiply by 2^2 to normalize to that range.
-    pinValue = analogRead(chPins[channelSelection]) * 4;
+    // Multiply by the difference between 2^12 and the Arduino's resolution to normalize to
+    // the real ADC's range (12-bit resolution).
+    pinValue = analogRead(chPins[channelSelection]) * (pow(2, 12) - pow(2, ARDUINO_RESOLUTION));
 
   uint8_t bytes[2] = { pinValue & 0xff, pinValue >> 8 };
 
