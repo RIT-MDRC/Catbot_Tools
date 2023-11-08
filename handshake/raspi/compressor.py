@@ -6,6 +6,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(OUTPUT_PIN, GPIO.OUT)
 
 set_high = 1
+print("* Press CTRL+C to quit *")
 
 try:
     while True:
