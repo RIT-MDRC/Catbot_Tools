@@ -4,19 +4,28 @@
  * the current pneumatics pressure is sufficient for leg movements.
 */
 
+// Resolution to set the ADC to
+#define RESOLUTION_BITS 10
+
 // Pressure level that we need to hit to be able to flex the leg (in psi)
-#define SUFFICIENT_PRESSURE 80
+#define SUFFICIENT_PRESSURE 30
 
 // Set to false if testing on real hardware
-#define ENABLE_MOCKING true
+#define ENABLE_MOCKING false
+
+// Operating range of the compressor/pressure system
+#define MIN_VOLTAGE 0.5  // at <MIN_PSI> psi
+#define MAX_VOLTAGE 4.5  // at <MAX_PSI> psi
+#define MIN_PSI 2
+#define MAX_PSI 150
 
 // Mock bounds
 #define MOCK_MIN 0
 #define MOCK_MAX 145
 bool increasing = true;  // Once we reach MOCK_MAX, decrease until we hit MOCK_MIN
 
-// The pin that is sending data to the Pi
-#define OUTPUT_PIN 13
+#define INPUT_PIN A0 // The pin reading from the pressure sensor
+#define OUTPUT_PIN 15  // The pin that is sending data to the Pi
 
 int currentPressure = 0;  // (in psi)
 
@@ -45,13 +54,21 @@ void loop()
   // If using real pressure sensor, read analog input.
   else
   {
-    // There would be an analogRead here + some math probably. I haven't
-    // gotten to try this with the actual pneumatics system yet.
+    double voltage = (analogRead(A0) / pow(2, RESOLUTION_BITS)) * 5.0;
+    
+    double voltageRange = MAX_VOLTAGE - MIN_VOLTAGE;
+    double pressureRange = MAX_PSI - MIN_PSI;
+
+    currentPressure = (((voltage - MIN_VOLTAGE) * pressureRange) / voltageRange) + MIN_PSI;
   }
 
   bool atSufficientPressure = currentPressure >= SUFFICIENT_PRESSURE;
   digitalWrite(OUTPUT_PIN, atSufficientPressure);
   digitalWrite(LED_BUILTIN, atSufficientPressure);  // turn on LED at sufficient pressure for debugging
+
+  Serial.print(currentPressure);
+  Serial.print(" -> ");
+  Serial.println(atSufficientPressure);
 
   delay(10);
 }
