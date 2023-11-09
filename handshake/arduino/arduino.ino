@@ -8,7 +8,7 @@
 #define RESOLUTION_BITS 10
 
 // Pressure level that we need to hit to be able to flex the leg (in psi)
-#define SUFFICIENT_PRESSURE 30
+#define SUFFICIENT_PRESSURE 60
 
 // Set to false if testing on real hardware
 #define ENABLE_MOCKING false
@@ -54,7 +54,7 @@ void loop()
   // If using real pressure sensor, read analog input.
   else
   {
-    double voltage = (analogRead(A0) / pow(2, RESOLUTION_BITS)) * 5.0;
+    double voltage = (analogRead(INPUT_PIN) / pow(2, RESOLUTION_BITS)) * 5.0;
     
     double voltageRange = MAX_VOLTAGE - MIN_VOLTAGE;
     double pressureRange = MAX_PSI - MIN_PSI;
