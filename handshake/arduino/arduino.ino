@@ -31,6 +31,7 @@ int currentPressure = 0;  // (in psi)
 
 void setup()
 {
+  Serial.begin(9600);
   pinMode(OUTPUT_PIN, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
 
