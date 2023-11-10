@@ -1,5 +1,6 @@
 # Features
 Arduino sends a "handshake" signal to Raspberry Pi so Raspberry Pi knows if the pneumatics system is operating at sufficient pressure. Sets the signal HIGH if the pressure is OK; LOW otherwise.
+Raspberry Pi program will print "yes" or "no" based on the input received by the Arduino.
 
 # Usage
 Connect a jumper wire from the Arduino pin defined in its code (variable OUTPUT_PIN in `handshake/arduino/arduino.ino`) to Raspberry Pi's defined pin (variable INPUT_PIN in `handshake/raspi/receive_handshake.py`). 
