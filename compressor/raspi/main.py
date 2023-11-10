@@ -16,7 +16,7 @@ try:
         input(f"Press enter to toggle compressor {'on' if set_high == 1 else 'off'}")
 
         # Toggle what pressing enter will do next time
-        GPIO.output(OUTPUT_PIN, set_high == 1)
+        GPIO.output(OUTPUT_PIN, set_high)
         set_high = 1 if set_high == 0 else 0
 
 except KeyboardInterrupt:
